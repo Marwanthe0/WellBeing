@@ -14,19 +14,6 @@ export function TipsPage({ moodEntries, suggestions }: TipsPageProps) {
   const [dailyQuote, setDailyQuote] = useState('');
   const [selectedMoodFilter, setSelectedMoodFilter] = useState('All');
 
-  const quotes = [
-    'Every day is a new beginning. Take a deep breath, smile, and start again.',
-    'You are stronger than you think, braver than you feel, and more loved than you know.',
-    'Progress, not perfection, is what we should strive for.',
-    'Your mental health is just as important as your physical health.',
-    'It\'s okay to not be okay. What matters is that you\'re trying.',
-    'Small steps every day lead to big changes over time.',
-    'You have survived 100% of your difficult days so far. You\'re doing great.',
-    'Be patient with yourself. Growth takes time.',
-    'Your feelings are valid, and it\'s okay to feel them.',
-    'Every small act of self-care is a victory worth celebrating.'
-  ];
-
   const todaysActivities = [
     { icon: Sun, title: '5-Minute Sun Break', description: 'Step outside and feel the warmth on your face' },
     { icon: Heart, title: 'Gratitude Practice', description: 'Write down 3 things you\'re grateful for today' },
@@ -35,17 +22,27 @@ export function TipsPage({ moodEntries, suggestions }: TipsPageProps) {
   ];
 
   useEffect(() => {
-    // Get daily quote (same quote per day)
-    const today = new Date().toDateString();
-    const savedQuote = localStorage.getItem(`daily_quote_${today}`);
-    
-    if (savedQuote) {
-      setDailyQuote(savedQuote);
-    } else {
-      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-      setDailyQuote(randomQuote);
-      localStorage.setItem(`daily_quote_${today}`, randomQuote);
-    }
+    // Get daily quote from database API
+    const fetchDailyQuote = async () => {
+      try {
+        const today = new Date().toDateString();
+        const response = await fetch(`/api/quotes?date=${encodeURIComponent(today)}`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          setDailyQuote(data.quote);
+        } else {
+          // Fallback quote if API fails
+          setDailyQuote('Every day is a new beginning. Take a deep breath, smile, and start again.');
+        }
+      } catch (error) {
+        console.error('Error fetching daily quote:', error);
+        // Fallback quote if API fails
+        setDailyQuote('Every day is a new beginning. Take a deep breath, smile, and start again.');
+      }
+    };
+
+    fetchDailyQuote();
 
     // Get personalized tip based on recent mood
     const recentMood = moodEntries[0];

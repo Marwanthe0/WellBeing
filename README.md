@@ -117,7 +117,7 @@ src/
 
 ### Authentication System
 - Secure signup and login functionality
-- Session persistence using localStorage
+- Session persistence using MySQL database
 - Protected routes for authenticated users only
 
 ### Mood Tracking
@@ -152,11 +152,14 @@ src/
 
 ## Data Storage
 
-Currently, the application uses localStorage for data persistence, making it a client-side only application. This includes:
-- User authentication data
-- Mood entries and history
-- Journal entries
-- Appointment bookings
+The application uses MySQL database for data persistence, providing:
+- Persistent user authentication and sessions
+- Reliable mood entries and history storage
+- Secure journal entries storage
+- Appointment bookings with data integrity
+- Daily quotes stored in database (migrated from localStorage)
+
+For detailed database setup instructions, see [DATABASE_SETUP.md](DATABASE_SETUP.md).
 
 ## Contributing
 

@@ -142,7 +142,7 @@ export function MoodTrackingPage({ moodEntries }: MoodTrackingPageProps) {
         ) : (
           <div className="space-y-4">
             {moodEntries.map((entry) => (
-              <div key={entry.moodId} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
+              <div key={entry.entryId} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
                 <div className="text-2xl">{getMoodEmoji(entry.mood)}</div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">

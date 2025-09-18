@@ -11,7 +11,7 @@ export function SignupForm() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+    const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -55,6 +55,7 @@ export function SignupForm() {
       }
     } catch (error) {
       setError('An error occurred. Please try again.');
+      console.log('Signup error:', error);
     }
     setLoading(false);
   };

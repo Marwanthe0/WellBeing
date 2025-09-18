@@ -1,0 +1,1 @@
+{"message":"Therapists found","therapists":[{"therapistId":1,"name":"Dr. Aisha Rahman","specialization":"Stress & Anxiety","email":"aisha@example.com","availableDays":"Mon, Wed"},{"therapistId":2,"name":"Mr. Imran Karim","specialization":"Depression","email":"imran@example.com","availableDays":"Tue, Thu"}],"count":2}

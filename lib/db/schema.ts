@@ -7,7 +7,7 @@ export const users = mysqlTable('users', {
   email: varchar('email', { length: 100 }).notNull().unique(),
   passwordHash: varchar('password_hash', { length: 255 }).notNull(),
   age: int('age'),
-  gender: mysqlEnum('gender', ['male', 'female', 'other', 'prefer_not_to_say']),
+  gender: mysqlEnum('gender', ['Male', 'Female', 'Other']).default('Other'),
   createdAt: timestamp('created_at').default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
 
@@ -30,30 +30,23 @@ export const appointments = mysqlTable('appointments', {
   appointmentId: int('appointment_id').primaryKey().autoincrement(),
   userId: int('user_id').notNull().references(() => users.userId, { onDelete: 'cascade' }),
   therapistId: int('therapist_id').notNull().references(() => therapists.therapistId, { onDelete: 'cascade' }),
-  appointmentDate: varchar('appointment_date', { length: 50 }).notNull(),
-  status: mysqlEnum('status', ['scheduled', 'completed', 'cancelled']).default('scheduled'),
+  appointmentDate: timestamp('appointment_date').notNull(),
+  status: mysqlEnum('status', ['Pending', 'Confirmed', 'Cancelled']).default('Pending'),
 });
 
 export const suggestions = mysqlTable('suggestions', {
   suggestionId: int('suggestion_id').primaryKey().autoincrement(),
-  mood: mysqlEnum('mood', ['very_happy', 'happy', 'neutral', 'sad', 'very_sad']).notNull(),
+  mood: mysqlEnum('mood', ['Very Happy', 'Happy', 'Neutral', 'Sad', 'Very Sad']).notNull(),
   tip: text('tip').notNull(),
 });
 
 export const moodEntries = mysqlTable('mood_entries', {
-  moodId: int('mood_id').primaryKey().autoincrement(),
+  entryId: int('entry_id').primaryKey().autoincrement(),
   userId: int('user_id').notNull().references(() => users.userId, { onDelete: 'cascade' }),
-  mood: mysqlEnum('mood', ['very_happy', 'happy', 'neutral', 'sad', 'very_sad']).notNull(),
-  score: int('score').notNull(),
+  mood: mysqlEnum('mood', ['Very Happy', 'Happy', 'Neutral', 'Sad', 'Very Sad']).notNull(),
+  moodScore: int('mood_score').notNull(),
   notes: text('notes'),
   entryDate: timestamp('entry_date').default(sql`CURRENT_TIMESTAMP`).notNull(),
-});
-
-export const dailyQuotes = mysqlTable('daily_quotes', {
-  quoteId: int('quote_id').primaryKey().autoincrement(),
-  date: varchar('date', { length: 50 }).notNull().unique(),
-  quote: text('quote').notNull(),
-  createdAt: timestamp('created_at').default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
 
 export type User = typeof users.$inferSelect;
@@ -68,5 +61,3 @@ export type Suggestion = typeof suggestions.$inferSelect;
 export type NewSuggestion = typeof suggestions.$inferInsert;
 export type MoodEntry = typeof moodEntries.$inferSelect;
 export type NewMoodEntry = typeof moodEntries.$inferInsert;
-export type DailyQuote = typeof dailyQuotes.$inferSelect;
-export type NewDailyQuote = typeof dailyQuotes.$inferInsert;

@@ -21,18 +21,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newMoodEntry = await db
+    await db
       .insert(moodEntries)
       .values({
         userId: parseInt(session.user.id),
-        mood: mood.toLowerCase().replace(' ', '_'),
-        score,
+        mood: mood, // Use the mood as-is since schema now matches
+        moodScore: score, // Updated field name
         notes: notes || null,
-      })
-      .returning();
+      });
 
     return NextResponse.json(
-      { message: 'Mood entry created successfully', entry: newMoodEntry[0] },
+      { message: 'Mood entry created successfully' },
       { status: 201 }
     );
   } catch (error) {

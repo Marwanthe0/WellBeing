@@ -11,7 +11,7 @@ const connection = mysql.createPool({
   connectionLimit: 10,
 });
 
-export const db = drizzle(connection, { schema });
+export const db = drizzle(connection, { schema, mode: 'default' });
 
 // Initialize database with sample data
 export async function initializeDatabase() {
@@ -45,29 +45,35 @@ export async function initializeDatabase() {
     ];
 
     for (const therapist of therapists) {
-      await db.insert(schema.therapists).values(therapist).onDuplicateKeyUpdate({
-        set: { name: therapist.name }
-      });
+      try {
+        await db.insert(schema.therapists).values(therapist);
+      } catch {
+        // Ignore duplicate key errors
+        console.log('Therapist already exists:', therapist.name);
+      }
     }
 
     // Insert sample suggestions
     const suggestions = [
-      { mood: 'very_happy' as const, tip: 'Share your happiness with others - it\'s contagious!' },
-      { mood: 'very_happy' as const, tip: 'Take a moment to reflect on what brought you joy today' },
-      { mood: 'happy' as const, tip: 'Keep up the positive momentum with some light exercise' },
-      { mood: 'happy' as const, tip: 'Connect with a friend or family member' },
-      { mood: 'neutral' as const, tip: 'Try some gentle movement like stretching or walking' },
-      { mood: 'neutral' as const, tip: 'Practice mindfulness or meditation for 5-10 minutes' },
-      { mood: 'sad' as const, tip: 'Be gentle with yourself - it\'s okay to feel sad sometimes' },
-      { mood: 'sad' as const, tip: 'Try some deep breathing exercises' },
-      { mood: 'very_sad' as const, tip: 'Remember that you\'re not alone in feeling this way' },
-      { mood: 'very_sad' as const, tip: 'Consider speaking with a mental health professional' }
+      { mood: 'Very Happy' as const, tip: 'Share your happiness with others - it\'s contagious!' },
+      { mood: 'Very Happy' as const, tip: 'Take a moment to reflect on what brought you joy today' },
+      { mood: 'Happy' as const, tip: 'Keep up the positive momentum with some light exercise' },
+      { mood: 'Happy' as const, tip: 'Connect with a friend or family member' },
+      { mood: 'Neutral' as const, tip: 'Try some gentle movement like stretching or walking' },
+      { mood: 'Neutral' as const, tip: 'Practice mindfulness or meditation for 5-10 minutes' },
+      { mood: 'Sad' as const, tip: 'Be gentle with yourself - it\'s okay to feel sad sometimes' },
+      { mood: 'Sad' as const, tip: 'Try some deep breathing exercises' },
+      { mood: 'Very Sad' as const, tip: 'Remember that you\'re not alone in feeling this way' },
+      { mood: 'Very Sad' as const, tip: 'Consider speaking with a mental health professional' }
     ];
 
     for (const suggestion of suggestions) {
-      await db.insert(schema.suggestions).values(suggestion).onDuplicateKeyUpdate({
-        set: { tip: suggestion.tip }
-      });
+      try {
+        await db.insert(schema.suggestions).values(suggestion);
+      } catch {
+        // Ignore duplicate key errors
+        console.log('Suggestion already exists for mood:', suggestion.mood);
+      }
     }
 
     console.log('Database initialized successfully');

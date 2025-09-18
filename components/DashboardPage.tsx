@@ -43,7 +43,7 @@ export function DashboardPage({ moodEntries }: DashboardPageProps) {
     
     return {
       date: format(date, 'MMM dd'),
-      score: entry ? entry.score : null,
+      score: entry ? entry.moodScore : null,
       mood: entry ? entry.mood : null
     };
   });
@@ -81,7 +81,8 @@ export function DashboardPage({ moodEntries }: DashboardPageProps) {
         max: 5,
         ticks: {
           stepSize: 1,
-          callback: function(value: any) {
+          callback: function(tickValue: string | number) {
+            const value = typeof tickValue === 'string' ? parseInt(tickValue) : tickValue;
             const moodLabels = ['', 'Very Sad', 'Sad', 'Neutral', 'Happy', 'Very Happy'];
             return moodLabels[value] || '';
           },
@@ -130,7 +131,7 @@ export function DashboardPage({ moodEntries }: DashboardPageProps) {
 
   // Calculate statistics
   const averageMood = moodEntries.length > 0 
-    ? (moodEntries.reduce((sum, entry) => sum + entry.score, 0) / moodEntries.length).toFixed(1)
+    ? (moodEntries.reduce((sum, entry) => sum + entry.moodScore, 0) / moodEntries.length).toFixed(1)
     : '0';
 
   const streak = calculateStreak();

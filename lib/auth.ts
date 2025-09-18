@@ -18,7 +18,8 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const user = await db.select().from(users).where(eq(users.email, credentials.email)).get();
+        const userResult = await db.select().from(users).where(eq(users.email, credentials.email)).limit(1);
+        const user = userResult[0];
 
         if (!user) {
           return null;

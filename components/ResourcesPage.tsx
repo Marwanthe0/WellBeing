@@ -1,7 +1,9 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { format } from 'date-fns';
 import { Calendar, Mail, Phone, MapPin, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import { Therapist, Appointment } from '@/lib/db/schema';
 
@@ -15,6 +17,8 @@ export function ResourcesPage({ therapists, appointments }: ResourcesPageProps) 
   const [appointmentDate, setAppointmentDate] = useState('');
   const [appointmentTime, setAppointmentTime] = useState('');
   const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [bookingError, setBookingError] = useState('');
+  const [isBooking, setIsBooking] = useState(false);
   const router = useRouter();
 
   const emergencyResources = [
@@ -44,6 +48,9 @@ export function ResourcesPage({ therapists, appointments }: ResourcesPageProps) 
     e.preventDefault();
     if (!selectedTherapist || !appointmentDate || !appointmentTime) return;
 
+    setIsBooking(true);
+    setBookingError('');
+
     try {
       const response = await fetch('/api/appointments', {
         method: 'POST',
@@ -57,17 +64,23 @@ export function ResourcesPage({ therapists, appointments }: ResourcesPageProps) 
         }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
         setBookingSuccess(true);
         setSelectedTherapist(null);
         setAppointmentDate('');
         setAppointmentTime('');
         router.refresh();
-
         setTimeout(() => setBookingSuccess(false), 5000);
+      } else {
+        setBookingError(data.error || 'Failed to book appointment');
       }
     } catch (error) {
       console.error('Error booking appointment:', error);
+      setBookingError('Network error. Please try again.');
+    } finally {
+      setIsBooking(false);
     }
   };
 
@@ -106,13 +119,23 @@ export function ResourcesPage({ therapists, appointments }: ResourcesPageProps) 
         </div>
       )}
 
+      {/* Error Message */}
+      {bookingError && (
+        <div className="mb-8 bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex items-center">
+            <AlertCircle className="h-5 w-5 text-red-600 mr-2" />
+            <p className="text-red-800">{bookingError}</p>
+          </div>
+        </div>
+      )}
+
       {/* Emergency Resources */}
       <div className="bg-red-50 border border-red-200 rounded-xl p-6 mb-8">
         <div className="flex items-start space-x-3 mb-4">
           <AlertCircle className="h-6 w-6 text-red-600 mt-1" />
           <div>
             <h2 className="text-xl font-semibold text-red-900">Crisis Support Resources</h2>
-            <p className="text-red-700">If you're in crisis or need immediate help, please reach out:</p>
+            <p className="text-red-700">If you&apos;re in crisis or need immediate help, please reach out:</p>
           </div>
         </div>
         
@@ -236,18 +259,21 @@ export function ResourcesPage({ therapists, appointments }: ResourcesPageProps) 
               <div className="flex space-x-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                  disabled={isBooking}
+                  className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Book Appointment
+                  {isBooking ? 'Booking...' : 'Book Appointment'}
                 </button>
                 <button
                   type="button"
+                  disabled={isBooking}
                   onClick={() => {
                     setSelectedTherapist(null);
                     setAppointmentDate('');
                     setAppointmentTime('');
+                    setBookingError('');
                   }}
-                  className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+                  className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -272,7 +298,7 @@ export function ResourcesPage({ therapists, appointments }: ResourcesPageProps) 
                       <p className="text-gray-600">{therapist?.specialization}</p>
                       <div className="flex items-center text-sm text-gray-500 mt-1">
                         <Calendar className="h-4 w-4 mr-1" />
-                        {appointment.appointmentDate}
+                        {format(new Date(appointment.appointmentDate), 'MMM dd, yyyy • h:mm a')}
                       </div>
                     </div>
                     <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">

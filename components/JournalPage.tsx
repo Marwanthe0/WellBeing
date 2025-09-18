@@ -164,7 +164,7 @@ export function JournalPage({ journalEntries }: JournalPageProps) {
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">Start Your Journal</h3>
             <p className="text-gray-600 mb-4">
-              Writing can be a powerful tool for mental wellness. Start by sharing what's on your mind today.
+              Writing can be a powerful tool for mental wellness. Start by sharing what&apos;s on your mind today.
             </p>
             <button
               onClick={() => setIsWriting(true)}

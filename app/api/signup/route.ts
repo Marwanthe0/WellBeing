@@ -16,13 +16,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    const existingUser = await db
+    const existingUsers = await db
       .select()
       .from(users)
       .where(eq(users.email, email))
-      .get();
+      .limit(1);
 
-    if (existingUser) {
+    if (existingUsers.length > 0) {
       return NextResponse.json(
         { error: 'User already exists' },
         { status: 400 }
@@ -33,17 +33,16 @@ export async function POST(request: NextRequest) {
     const passwordHash = await bcrypt.hash(password, 12);
 
     // Create user
-    const newUser = await db
+    await db
       .insert(users)
       .values({
         name,
         email,
         passwordHash,
-      })
-      .returning();
+      });
 
     return NextResponse.json(
-      { message: 'User created successfully', userId: newUser[0].userId },
+      { message: 'User created successfully' },
       { status: 201 }
     );
   } catch (error) {

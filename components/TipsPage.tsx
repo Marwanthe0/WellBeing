@@ -16,7 +16,7 @@ export function TipsPage({ moodEntries, suggestions }: TipsPageProps) {
 
   const todaysActivities = [
     { icon: Sun, title: '5-Minute Sun Break', description: 'Step outside and feel the warmth on your face' },
-    { icon: Heart, title: 'Gratitude Practice', description: 'Write down 3 things you\'re grateful for today' },
+    { icon: Heart, title: 'Gratitude Practice', description: 'Write down 3 things you&apos;re grateful for today' },
     { icon: Smile, title: 'Call a Friend', description: 'Reach out to someone who makes you smile' },
     { icon: RefreshCw, title: 'Deep Breathing', description: 'Take 10 deep breaths and center yourself' }
   ];
@@ -128,7 +128,7 @@ export function TipsPage({ moodEntries, suggestions }: TipsPageProps) {
 
       {/* Today's Activities */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Today's Wellness Activities</h2>
+  <h2 className="text-2xl font-bold text-gray-900 mb-6">Today&apos;s Wellness Activities</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {todaysActivities.map((activity, index) => (
             <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">

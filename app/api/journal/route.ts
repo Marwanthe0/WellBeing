@@ -21,16 +21,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newJournalEntry = await db
+    await db
       .insert(journals)
       .values({
         userId: parseInt(session.user.id),
         entryText: `${title}\n\n${content}`,
-      })
-      .returning();
+      });
 
     return NextResponse.json(
-      { message: 'Journal entry created successfully', entry: newJournalEntry[0] },
+      { message: 'Journal entry created successfully' },
       { status: 201 }
     );
   } catch (error) {

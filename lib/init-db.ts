@@ -1,4 +1,4 @@
-import { db, initializeDatabase } from './db';
+import { initializeDatabase } from './db';
 
 // Initialize the database with sample data
 initializeDatabase().then(() => {

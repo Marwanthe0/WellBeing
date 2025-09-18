@@ -1,7 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import { dailyQuotes } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
 
 const quotes = [
   'Every day is a new beginning. Take a deep breath, smile, and start again.',
@@ -25,27 +22,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Date parameter is required' }, { status: 400 });
     }
 
-    // Check if quote exists for this date
-    const existingQuote = await db
-      .select()
-      .from(dailyQuotes)
-      .where(eq(dailyQuotes.date, date))
-      .limit(1);
-
-    if (existingQuote.length > 0) {
-      return NextResponse.json({ quote: existingQuote[0].quote });
-    }
-
-    // Generate new quote for this date
-    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    // Generate a consistent quote for the same date using a simple hash
+    const dateHash = date.split('').reduce((hash, char) => {
+      return hash + char.charCodeAt(0);
+    }, 0);
     
-    // Store in database
-    await db.insert(dailyQuotes).values({
-      date,
-      quote: randomQuote,
-    });
+    const quoteIndex = dateHash % quotes.length;
+    const dailyQuote = quotes[quoteIndex];
 
-    return NextResponse.json({ quote: randomQuote });
+    return NextResponse.json({ quote: dailyQuote });
   } catch (error) {
     console.error('Error fetching daily quote:', error);
     return NextResponse.json(
